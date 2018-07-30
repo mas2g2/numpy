@@ -1,6 +1,5 @@
 07/27/2018
 Email: mileshshah@gmail.com
-Call: (417)693-3867
 
 This application runs basic statistical analysis on either one or two sets of numbers
 specified by the user
