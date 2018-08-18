@@ -3,29 +3,31 @@ import numpy as np
 from scipy import stats
 import os as os
 import sys
-print(sys.argv[0])
-print(len(sys.argv))
+
 def calculate_mean(array):
     if isinstance(array,list) == False:
-        print("First parameter needs to be a list")
+        print("First parameter needs to be a list of float values")
         return
     else:
         return np.mean(array)
 
 def get_median(array):
     if isinstance(array,list) == False:
-        print("First parameter needs to be a list")
+        print("First parameter needs to be a list of float values")
         return
     else:
         return np.median(array)
 
 def find_mode(array):
     if isinstance(array,list) == False:
-        print("First parameter needs to be a list")
+        print("First parameter needs to be a list of float values")
         return
     else:
-        mode = mode(array)
-        return mode
+        try:
+            mod = mode(array)
+        except:
+            mod = "No mode"
+        return mod
 
 def standard_deviation(array):
     if isinstance(array,list) == False:
@@ -61,43 +63,30 @@ def update_mean(prev_mean,array,new_item):
         new_mean = total/len(array)
     return new_mean
 
-array = list()
 
-text_file = input("Enter a text file (*.txt) with only float values: ")
-yes_or_no = input("Do you wish to enter another text file?(Enter 'yes' or 'no') ")
-if yes_or_no == 'yes':
-    try:
-        text_file_2 = input("Enter a text file (*.txt) with only float values: ")
-    except FileNotFoundError:
-        print("Error: No such file or folder in this directory")
-if os.path.getsize(text_file) > 0:
-    try:
-        with open(text_file,"r") as f1:
-            for line in f1:
-                array.append(float(line.strip()))
-        mean = str(calculate_mean(array))
-        print(array)
-        data_analysis_string = ' {\n'+'\t"File" : '+'"'+text_file+'",\n'+'\t"Mean" : '+'"'+mean+'",\n'+'\t"Median" : '+'"'+str(get_median(array))+'",\n'+'\t"Mode" : '+'"'+str(find_mode(array))+'",\n'+'\t"Standard Deviation" : '+'"'+str(standard_deviation(array))+'",\n'+'\t"Variance" : '+'"'+str(variance(array))+'",\n'+'\t"Sorted Dataset" : '+'"'+str(sorted_dataset(array))+'",\n'+'\t"Sum" : '+'"'+str(sum(array))+'",\n'+'\t"Number of items" : '+'"'+str(len(array))+'"\n'+'}'
-        print(data_analysis_string)
-        new_file = input("Enter a JSON file(*.json) where you would like to enter updated information: ")
-        analysis_data = 
-        try:
-            if os.path.getsize(new_file) > 0:
-                print("Notify! Text file : '",new_file,"', is not empty.")
-                output_file = open(new_file,"a")
-                output_file.write(data_analysis_string)
-                output_file.close()
-            else:
-                print("Warning! Text file: '",new_file,"', is empty.")
-                output_file = open(new_file,"w")
-                output_file.write(data_analysis_string)
-                output_file.close()
-        except FileNotFoundError:
-            print("Creating new file ",new_file,"... ")
-            output_file = open(new_file,"w+")
-            output_file.write(data_analysis_string)
-            output_file.close()
-    except FileNotFoundError:
-        print("ERR:File was not found in this directory.")
-else:
-    print("ERR:File is empty")
+arg = sys.argv[1:]
+array = list()
+array_2 = list()
+new_list = 0
+for i in arg:
+    
+    if new_list == 0 and i != '/':
+        array.append(float(i))
+    elif i == '/':
+        new_list = 1
+    else:
+        array_2.append(float(i))
+
+mean = str(calculate_mean(array))
+
+data_analysis_string = ' {\n'+'\t"Data" : '+'"'+str(array)+'",\n'+'\t"Mean" : '+'"'+mean+'",\n'+'\t"Median" : '+'"'+str(get_median(array))+'",\n'+'\t"Mode" : '+'"'+str(find_mode(array))+'",\n'+'\t"Standard Deviation" : '+'"'+str(standard_deviation(array))+'",\n'+'\t"Variance" : '+'"'+str(variance(array))+'",\n'+'\t"Sorted Dataset" : '+'"'+str(sorted_dataset(array))+'",\n'+'\t"Sum" : '+'"'+str(sum(array))+'",\n'+'\t"Number of items" : '+'"'+str(len(array))+'"\n'+'}'
+print(data_analysis_string)
+
+from scipy.stats import linregress
+if array_2:
+    data_analysis_string = ' {\n'+'\t"Data" : '+'"'+str(array_2)+'",\n'+'\t"Mean" : '+'"'+str(calculate_mean(array_2))+'",\n'+'\t"Median" : '+'"'+str(get_median(array_2))+'",\n'+'\t"Mode" : '+'"'+str(find_mode(array_2))+'",\n'+'\t"Standard Deviation" : '+'"'+str(standard_deviation(array_2))+'",\n'+'\t"Variance" : '+'"'+str(variance(array_2))+'",\n'+'\t"Sorted Dataset" : '+'"'+str(sorted_dataset(array_2))+'",\n'+'\t"Sum" : '+'"'+str(sum(array_2))+'",\n'+'\t"Number of items" : '+'"'+str(len(array_2))+'"\n'+'}'
+    print(data_analysis_string)
+if new_list == 1:
+    slope,intercept,corr,p_val,std = linregress(array,array_2)
+    linear_regression = '{\n"slope" : "'+str(slope)+'", "intercept" : "'+str(intercept)+'", "correlation coefficient" : "'+str(corr)+'", "p-value" : "'+str(p_val)+'", "standard deviation" : "'+str(std)+'" }'
+    print(linear_regression)
